@@ -137,8 +137,9 @@ module.exports.getDocs = async (req, res) => {
 };
 
 module.exports.submitDetails = async (req, res) => {
-    const id = _.get('req.body', id, '');
-    conn.query("UPDATE docs SET submit = ? , status = ? WHERE id = ?", [1, "SUBMITTED", id], async (err, res) => {
+    const id = _.get(req.body, 'id', '');
+    console.log(id);
+    conn.query("UPDATE docs SET submit = ? , status = ? WHERE id = ?", [1, "SUBMITTED", id], async (err, resp) => {
         if (err) {
             console.log(err);
             utilities.sendError(res);
@@ -161,3 +162,48 @@ module.exports.getBlogs = async (req, res) => {
         }
     });
 };
+
+module.exports.getPost = async(req, res) => {
+    const id = _.get(req.params, 'id', '');
+    console.log(id);
+    conn.query("SELECT * FROM blog WHERE id = ?", id, async (err,resp) => {
+        if(err) {
+            console.log(err);
+            resp.sendError("Some error occured", res);
+        }
+        else {
+            console.log(resp);
+            res.status(200);
+            res.json({"post" : resp[0]});
+        }
+    });
+}
+
+module.exports.getFaqs = async (req, res) => {
+    conn.query("SELECT * FROM faq WHERE 1", async (err, resp) => {
+        if (err) {
+            console.log(err);
+            utilities.sendError(res);
+        }
+        else {
+            res.status(200);
+            res.json({ "posts": resp });
+        }
+    });
+};
+
+module.exports.getFaq = async(req, res) => {
+    const id = _.get(req.params, 'id', '');
+    console.log(id);
+    conn.query("SELECT * FROM faq WHERE id = ?", id, async (err,resp) => {
+        if(err) {
+            console.log(err);
+            resp.sendError("Some error occured", res);
+        }
+        else {
+            console.log(resp);
+            res.status(200);
+            res.json({"post" : resp[0]});
+        }
+    });
+}

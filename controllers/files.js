@@ -144,17 +144,74 @@ module.exports.saveBlog = (req, res) => {
 
 };
 
+module.exports.saveFaq = (req, res) => {
+    console.log("in apu");
+    var upload = multer({
+        storage: storage
+    }).single('file')
+    upload(req, res, async function (err) {
+        if (err) {
+            console.log(err);
+            utilities.sendError("Something went wrong", res);
+        }
+        else {
+            console.log("from else");
+            console.log(req.body);
+            const status = await faqData(req.body.title, req.body.image, req.body.text);
+            console.log(status);
+            if (status == 1) {
+                utilities.sendSuccess("Uploaded Successfully", res);
+            }
+            else {
+                utilities.sendError(res);
+            }
+        }
+    })
+
+};
+
+
+
 const blogData = async (title, image, text) => {
     return new Promise((resolve, reject) => {
         // image = [...image];
         // image = image[image.length -1];
-        title = [...title];
-        title = title[title.length -1];
-        text = [...text];
-        text = text[text.length -1];
+        if (typeof title != 'string') {
+            //title = [...title];
+            title = title[title.length - 1];
+        }
+        if(typeof title != 'string') {
+        //text = [...text];
+        text = text[text.length - 1];
+        }
         console.log(title, image, text);
-        conn.query("INSERT INTO blog (title, image, text) VALUES (?,?,?)",[title, image, text], async (err, resp) => {
-            if(err) {
+        conn.query("INSERT INTO blog (title, image, text) VALUES (?,?,?)", [title, image, text], async (err, resp) => {
+            if (err) {
+                console.log(err);
+                resolve(0);
+            }
+            else {
+                resolve(1);
+            }
+        });
+    });
+}
+
+const faqData = async (title, image, text) => {
+    return new Promise((resolve, reject) => {
+        // image = [...image];
+        // image = image[image.length -1];
+        if (typeof title != 'string') {
+            //title = [...title];
+            title = title[title.length - 1];
+        }
+        if(typeof title != 'string') {
+        //text = [...text];
+        text = text[text.length - 1];
+        }
+        console.log(title, image, text);
+        conn.query("INSERT INTO faq (title, image, text) VALUES (?,?,?)", [title, image, text], async (err, resp) => {
+            if (err) {
                 console.log(err);
                 resolve(0);
             }
